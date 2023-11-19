@@ -4,8 +4,8 @@ const router = express()
 const {signup, login, getUser} = require('../controllers/userController')
 const {protect} = require('../middleware/authMiddleware')
 
-router.route('/signup', signup)
-router.route('/login', login)
-router.route('/getUser', protect, getUser)
+router.post('/signup', signup)
+router.post('/login', login)
+router.get('/getUser', protect, getUser)
 
 module.exports = router

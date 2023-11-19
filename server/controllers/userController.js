@@ -15,6 +15,7 @@ const generateToken = (id) => {
 
 const signup = asyncHandler( async (req,res) => {
     const {name, email, password} = req.body
+    console.log(0);
 
     if (!name || !email || !password) {
         res.status(400)
@@ -27,7 +28,7 @@ const signup = asyncHandler( async (req,res) => {
         res.status(400)
         throw new Error('User already exsists!')
     }
-
+    console.log(1);
     // hash the password
     const salt = bcrypt.genSalt(10)
     const hashedPassword = bcrypt.hash(password, salt)
@@ -38,14 +39,18 @@ const signup = asyncHandler( async (req,res) => {
         email: email,
         password: hashedPassword
     })
+    console.log(2);
 
     if (newUser) {
-        res.status(201).json({
+        console.log(newUser);
+        res.status(201).send({
             _id: newUser.id,
             name: newUser.name,
             email: newUser.email,
             token: generateToken(newUser._id)
         })
+    } else{
+        res.send({error: "not created"})
     }
 })
 

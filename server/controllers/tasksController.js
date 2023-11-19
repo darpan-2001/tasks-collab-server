@@ -28,6 +28,20 @@ const setTask = asyncHandler(async(req,res) => {
     
 })
 
+const assignTaskTo = asyncHandler(async(req,res) => {
+    const taskId = req.params.taskId
+    const assignedToId = req.user.id
+
+    const task = await Tasks.findById(taskId)
+
+    if (!task) {
+        res.status(400)
+        throw new Error('No data found!')
+    }
+
+    
+})
+
 const updateTask = asyncHandler(async(req,res) => {
     const taskId = req.params.id
     const toBeUpdated = req.body.toBeUpdated
