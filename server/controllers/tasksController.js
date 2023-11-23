@@ -30,14 +30,31 @@ const setTask = asyncHandler(async(req,res) => {
 
 const assignTaskTo = asyncHandler(async(req,res) => {
     const taskId = req.params.taskId
-    const assignedToId = req.user.id
+    const assignTaskTo = req.user.id
 
-    const task = await Tasks.findById(taskId)
-
-    if (!task) {
+    if (!taskId || !assignTaskTo) {
         res.status(400)
         throw new Error('No data found!')
     }
+
+    const task = await Tasks.findById(taskId)
+
+    if (task) {
+        const updatedTask = await Tasks.findOneAndUpdate(
+            {
+                id: taskId
+            },
+            {
+                assignedTo: assignTaskTo
+            }
+        )
+
+        res.status(200).send(updatedTask)
+    } else {
+        res.status(400)
+        throw new Error('Error in assigning task to a user!')
+    }
+    
 
     
 })
@@ -112,5 +129,6 @@ module.exports = {
     getTasks,
     setTask,
     updateTask,
+    assignTaskTo,
     deleteTask
 }

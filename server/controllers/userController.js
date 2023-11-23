@@ -12,47 +12,46 @@ const generateToken = (id) => {
 }
 
 
-
-const signup = asyncHandler( async (req,res) => {
-    const {name, email, password} = req.body
-    console.log(0);
-
+const signup = asyncHandler(async (req, res) => {
+  
+    const { name, email, password } = req.body
+  
     if (!name || !email || !password) {
-        res.status(400)
-        throw new Error('Incomplete data!')
+      res.status(400)
+      throw new Error('Please add all fields')
     }
-
-    // check if user exsists
-    const isUser = await User.findOne({email})
-    if (isUser) {
-        res.status(400)
-        throw new Error('User already exsists!')
+  
+    // Check if user exists
+    const userExists = await User.findOne({ email })
+  
+    if (userExists) {
+      res.status(400)
+      throw new Error('User already exists')
     }
-    console.log(1);
-    // hash the password
-    const salt = bcrypt.genSalt(10)
-    const hashedPassword = bcrypt.hash(password, salt)
-
-    // create a new user profile
-    const newUser = await User.create({
-        name: name,
-        email: email,
-        password: hashedPassword
+  
+    // Hash password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+  
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
     })
-    console.log(2);
-
-    if (newUser) {
-        console.log(newUser);
-        res.status(201).send({
-            _id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-            token: generateToken(newUser._id)
-        })
-    } else{
-        res.send({error: "not created"})
+  
+    if (user) {
+      res.status(201).json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      })
+    } else {
+      res.status(400)
+      throw new Error('Invalid user data')
     }
-})
+  })
 
 const login = asyncHandler( async (req,res) => {
     const {email, password} = req.body
@@ -61,7 +60,7 @@ const login = asyncHandler( async (req,res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
         res.send(200).json({
-            _id: newUser.id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             token: generateToken(user._id)
@@ -80,6 +79,7 @@ const getUser = asyncHandler(async (req,res) => {
         name,
         email
     })
+    
 })
 
 
